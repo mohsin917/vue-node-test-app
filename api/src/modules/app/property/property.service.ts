@@ -18,11 +18,11 @@ export class PropertyService extends BaseService {
    * @returns response
    */
   async createProperty(payload: PropertyDto) {
-    const propertyExists = await this.findOne({address: payload.address});
+    const propertyExists = await this.findOne({ address: payload.address });
     if (propertyExists) {
       return { status: "error", message: "Property already exists with this address" };
     }
-  
+
     const newProperty = await this.create(payload);
     return { status: "success", message: "Property created successfully", data: newProperty };
   }
@@ -83,21 +83,19 @@ export class PropertyService extends BaseService {
   }
 
   async deleteProperty(id: number) {
+    const deleteResponse = await this.deletePropertyById(id);
+    return deleteResponse ?
+      { status: "success", message: "Property deleted successfully" } :
+      { status: "error", message: "Property not deleted" };
+  }
 
-    /**
-     * find childs
-     * delete childs (call function in loop)
-     * delete ownself
-     */
-    const openHouses = await this._openHouseService.findAll({propertyId: id});
+  async deletePropertyById(id: number) {
+    const openHouses = await this._openHouseService.findAll({ propertyId: id });
     for (let houseIndex = 0; houseIndex < openHouses.length; houseIndex++) {
       const element = openHouses[houseIndex].dataValues;
-      console.log(element)
-      // this._openHouseService.delete()
+      await this._openHouseService.deleteHouseById(element.id);
     }
     const deleteResponse = await this.deleteById(id);
-    return deleteResponse ?
-      { status: "success", message: "Property updated successfully" } :
-      { status: "error", message: "Property not updated" };
+    return deleteResponse;
   }
 }

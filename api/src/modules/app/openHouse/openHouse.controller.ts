@@ -17,6 +17,7 @@ export class OpenHouseController {
 
       return res.json(await this._openHouseService.createHouse(houseDto));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: error });
     }
   }
@@ -42,6 +43,7 @@ export class OpenHouseController {
       return res.json(await this._openHouseService.findHouseById(Number(req.params.id)))
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -53,7 +55,7 @@ export class OpenHouseController {
 
       return res.json(await this._openHouseService.UpdateHouse(param.id, payload));
     } catch (error) {
-
+      console.log(error);
       return res.json({ status: "error", message: `Something went wrong` });
     }
   }
@@ -65,6 +67,7 @@ export class OpenHouseController {
 
       return res.json(await this._openHouseService.deleteHouse(param.id));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: 'Something went wrong' })
     }
   }

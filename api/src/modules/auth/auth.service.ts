@@ -32,7 +32,7 @@ export class AuthService {
 
 			return { status: 'success', data: { token: token, admin: result } };
 		} catch (error) {
-
+			console.log(error);
 			return { status: 'error', data: error?.response?.data || error?.stack };
 		}
 	}

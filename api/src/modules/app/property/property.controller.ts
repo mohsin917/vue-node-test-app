@@ -18,6 +18,7 @@ export class PropertyController {
 
       return res.json(await this._propertyService.createProperty(propertyDto));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: "Something went wrong" });
     }
   }
@@ -30,6 +31,7 @@ export class PropertyController {
       return res.json(await this._propertyService.list(payload));
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -42,6 +44,7 @@ export class PropertyController {
       return res.json(await this._propertyService.findPropertyById(Number(req.params.id)))
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -53,7 +56,7 @@ export class PropertyController {
 
       return res.json(await this._propertyService.UpdateProperty(Number(param.id), payload));
     } catch (error) {
-
+      console.log(error);
       return res.json({ status: "error", message: `Something went wrong` });
     }
   }
@@ -65,6 +68,7 @@ export class PropertyController {
 
       return res.json(await this._propertyService.deleteProperty(param.id));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: 'Something went wrong' })
     }
   }

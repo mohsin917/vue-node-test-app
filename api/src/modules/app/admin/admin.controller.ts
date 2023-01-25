@@ -18,6 +18,7 @@ export class AdminController {
 
       return res.json(await this._adminService.createAdmin(adminDto));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: "Something went wrong" });
     }
   }
@@ -30,6 +31,7 @@ export class AdminController {
       return res.json(await this._adminService.list(payload));
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -42,6 +44,7 @@ export class AdminController {
       return res.json(await this._adminService.findAdminById(Number(req.params.id)))
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -53,7 +56,7 @@ export class AdminController {
 
       return res.json(await this._adminService.UpdateAdmin(param.id, payload));
     } catch (error) {
-
+      console.log(error);
       return res.json({ status: "error", message: `Something went wrong` });
     }
   }
@@ -65,6 +68,7 @@ export class AdminController {
 
       return res.json(await this._adminService.deleteAdmin(param.id));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: 'Something went wrong' })
     }
   }

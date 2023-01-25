@@ -18,7 +18,11 @@
               @click="$router.push({ path: `/properties/update/${this.url}` })">
               <CIcon :icon="icons.cilPen" />
             </CButton>
-            <CButton color="danger" variant="outline" @click="$router.push({ path: `/properties` })">
+            <CButton color="danger" variant="outline" @click="() => {
+              deleteConfirmationModal = true
+              deleteId = openHouse.id
+            }
+            ">
               <CIcon :icon="icons.cilXCircle" />
             </CButton>
           </div>
@@ -57,7 +61,7 @@
         <CCol :xs="6" class="text-end">
           <CButton color='success' variant="outline" @click="
             () => {
-              visibleVerticallyCenteredDemo = true
+              addTenantModal = true
               deleteId = openHouse.id
             }
           ">
@@ -68,14 +72,14 @@
 
       <CCardBody>
         <div>
-          <CModal alignment="center" :visible="visibleVerticallyCenteredDemo" @close="
+          <CModal alignment="center" :visible="addTenantModal" @close="
             () => {
-              visibleVerticallyCenteredDemo = false
+              addTenantModal = false
             }
           ">
             <CModalHeader dismiss @close="
               () => {
-                visibleVerticallyCenteredDemo = false
+                addTenantModal = false
               }
             ">
               <CModalTitle>Add Tenant</CModalTitle>
@@ -114,16 +118,56 @@
             <CModalFooter>
               <CButton type="submit" color="primary" @click="
                 () => {
-                  visibleVerticallyCenteredDemo = false
+                  addTenantModal = false
                 }
               ">
                 Close
               </CButton>
               <CButton color="success" @click="handleSaveTenant(this.tenantForm)">Save</CButton>
             </CModalFooter>
+        
+            <div v-if="limitNotification" class="alert alert-danger alert-dismissible fade show" role="alert">
+              <strong>Limit Exceed!</strong> You have add more limit please reduce it.
+              <button type="button" @click="closeAlert()" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
+            </div>
           </CModal>
         </div>
       </CCardBody>
+
+      <!-- confirmation modal -->
+      <CCardBody>
+        <div>
+          <CModal alignment="center" :visible="deleteConfirmationModal" @close="
+            () => {
+              deleteConfirmationModal = false
+            }
+          ">
+            <CModalHeader dismiss @close="
+              () => {
+                deleteConfirmationModal = false
+              }
+            ">
+              <CModalTitle>Delete House</CModalTitle>
+            </CModalHeader>
+            <CModalBody>
+              Are you sure you want to delete this house?
+            </CModalBody>
+            <CModalFooter>
+              <CButton color="primary" @click="
+                () => {
+                  deleteConfirmationModal = false
+                }
+              ">
+                Close
+              </CButton>
+              <CButton color="danger" @click="deleteRecord(deleteId)">Delete</CButton>
+            </CModalFooter>
+          </CModal>
+        </div>
+      </CCardBody>
+      <!-- End confirmation modal -->
+
+
     </CCardBody>
 
   </CCard>
@@ -144,7 +188,9 @@ export default {
       openHouses: [],
       isNextValueExists: true,
       isPreviousValueExists: true,
-      visibleVerticallyCenteredDemo: false,
+      addTenantModal: false,
+      deleteConfirmationModal: false,
+      limitNotification: false,
       tenantForm: {
         tenantAmount: '',
         houseId: '',
@@ -206,19 +252,22 @@ export default {
 
     handleSaveTenant(form) {
       form.houseId = this.id,
-      form.propertyId = this.tenantForm.propertyId;
-
-      this.visibleVerticallyCenteredDemo = false;
-
-      //     console.log(this.tenantForm);
-      api.post('openHouseDetail/create', form).then((res) => {
-        if (res.status === "success") {
-          this.$router.push({ path: `/openHouse` });
-        }
-      }).catch((err) => {
-        console.log(err);
-      })
-      //   this.validatedCustom = true;
+        form.propertyId = this.tenantForm.propertyId;
+      const remainingLimit = this.openHouse.visitorAmount - this.openHouse.openHouseTotalAmount;
+      this.openHouse.visitorAmount - this.openHouse.openHouseTotalAmount
+      if (this.tenantForm.tenantAmount > remainingLimit) {
+        this.limitNotification = true;
+      } else {
+        api.post('openHouseDetail/create', form).then((res) => {
+          if (res.status === "success") {
+            this.addTenantModal = false;
+            this.$router.push({ path: `/openHouse` });
+          }
+        }).catch((err) => {
+          console.log(err);
+        })
+        this.validatedCustom = true;
+      }
     },
 
     goNext() {
@@ -249,6 +298,26 @@ export default {
         this.isNextValueExists = true;
         this.isPreviousValueExists = false;
       }
+    },
+
+    /**
+     * Delete record
+     * @param {number} id
+     */
+    deleteRecord(id) {
+      api.delete(`/openHouse/delete/${id}`).then((res) => {
+        if (res) {
+          this.deleteConfirmationModal = false;
+          this.$router.push({ path: '/openHouse' })
+        }
+      }).catch((err) => {
+        console.log(err, "its error");
+      })
+
+    },
+
+    closeAlert(){
+      this.limitNotification = false;
     }
   }
 

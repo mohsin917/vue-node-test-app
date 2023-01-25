@@ -18,6 +18,7 @@ export class UsersController {
 
       return res.json(await this._userService.createUser(userDto));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: "Something went wrong" });
     }
   }
@@ -30,6 +31,7 @@ export class UsersController {
       return res.json(await this._userService.list(payload));
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -42,6 +44,7 @@ export class UsersController {
       return res.json(await this._userService.findUserById(Number(req.params.id)))
 
     } catch (error) {
+      console.log(error);
       return { status: 'error', message: 'Something went wrong' }
     }
   }
@@ -53,7 +56,7 @@ export class UsersController {
 
       return res.json(await this._userService.UpdateUser(param.id, payload));
     } catch (error) {
-
+      console.log(error);
       return res.json({ status: "error", message: `Something went wrong` });
     }
   }
@@ -65,6 +68,7 @@ export class UsersController {
 
       return res.json(await this._userService.deleteUser(param.id));
     } catch (error) {
+      console.log(error);
       return res.json({ status: 'error', message: 'Something went wrong' })
     }
   }

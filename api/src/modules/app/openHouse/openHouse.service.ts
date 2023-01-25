@@ -4,10 +4,11 @@ import { Op } from 'sequelize';
 import { BaseService } from 'src/core/base/base.service';
 import * as bcrypt from 'bcrypt';
 import { OpenHouseDto, UpdateOpenHouseDto } from './openHouseDto/openHouse.dto';
+import { OpenHouseDetailService } from '../openHouseDetail/openHouseDetail.service';
 
 @Injectable()
 export class OpenHouseService extends BaseService {
-  constructor() {
+  constructor(private _openHouseDetailService: OpenHouseDetailService) {
     super(OpenHouse)
   }
 
@@ -113,9 +114,19 @@ export class OpenHouseService extends BaseService {
   }
 
   async deleteHouse(id: number) {
-    const deleteResponse = await this.deleteById(id);
+    const deleteResponse = await this.deleteHouseById(id);
     return deleteResponse ?
       { status: "success", message: "House updated successfully" } :
       { status: "error", message: "House not updated" };
+  }
+
+  async deleteHouseById(id: number) {
+    const openHouses = await this._openHouseDetailService.findAll({openHouseId: id});
+    for (let houseIndex = 0; houseIndex < openHouses.length; houseIndex++) {
+      const element = openHouses[houseIndex].dataValues;
+      await this._openHouseDetailService.deleteHouseDetailById(element.id);
+    }
+    const deleteResponse = await this.deleteById(id);
+    return deleteResponse;
   }
 }

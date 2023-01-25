@@ -91,9 +91,14 @@ export class OpenHouseDetailService extends BaseService {
   }
 
   async deleteHouse(id: number) {
-    const deleteResponse = await this.deleteById(id);
+    const deleteResponse = await this.deleteHouseDetailById(id);
     return deleteResponse ?
       { status: "success", message: "House updated successfully" } :
       { status: "error", message: "House not updated" };
+  }
+
+  async deleteHouseDetailById(id: number) {
+    const deleteResponse = await this.deleteById(id);
+    return deleteResponse;
   }
 }
