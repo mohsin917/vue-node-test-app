@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "mohsin",
+    "password": "dologics",
+    "database": "uchop",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "mohsin",
+    "password": "dologics",
+    "database": "uchop",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "mohsin",
+    "password": "dologics",
+    "database": "uchop",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
