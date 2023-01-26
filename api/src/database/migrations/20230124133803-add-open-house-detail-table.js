@@ -19,14 +19,6 @@ module.exports = {
           key: 'id'
         },
       },
-      property_id: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'tbl_properties',
-          key: 'id'
-        },
-      },
       user_id: {
         type: Sequelize.BIGINT,
         allowNull: false,
@@ -34,10 +26,6 @@ module.exports = {
           model: 'tbl_users',
           key: 'id'
         },
-      },
-      tenant_amount: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
       },
       created_by: {
         type: Sequelize.INTEGER,

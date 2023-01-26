@@ -40,4 +40,5 @@ class ApiClient {
   }
 }
 
-export default new ApiClient();
+export { ApiClient as default };
+// export default new ApiClient();

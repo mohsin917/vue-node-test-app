@@ -21,14 +21,14 @@
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell scope="col">Address</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Description</CTableHeaderCell>
+            <!-- <CTableHeaderCell scope="col">Description</CTableHeaderCell> -->
             <CTableHeaderCell scope="col" style="width: 200px"></CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody>
           <CTableRow v-for="record in records">
             <CTableDataCell>{{ record.address }}</CTableDataCell>
-            <CTableDataCell>{{ record.description }}</CTableDataCell>
+            <!-- <CTableDataCell>{{ record.description }}</CTableDataCell> -->
             <CTableDataCell class="text-end">
               <a class="link me-2" @click="$router.push({ path: `/properties/view/${record.id}` })">
                 <CIcon :icon="icons.cilZoomIn" />
@@ -89,7 +89,8 @@
 
 <script>
 import { cilPlus, cilPen, cilXCircle, cilZoomIn } from '@coreui/icons'
-import api from '@/api/api-client'
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 export default {
   name: 'Properties',

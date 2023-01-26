@@ -27,17 +27,22 @@
           </CCol>
         </CRow>
 
-        <CRow>
+        <CRow class="mt-2">
           <CCol>
-            <CFormInput class="mb-1 removeBorder mt-3" type="text" id="description" floatingLabel="Description"
+            <CFormLabel for="description">Description</CFormLabel>
+            <CFormTextarea id="description" rows="6"  v-model="form.description">
+            </CFormTextarea>
+
+            <!-- <CFormInput class="mb-1 removeBorder mt-3" type="text" id="description" floatingLabel="Description"
               autocomplete="off" placeholder="Description" v-model="form.description" required
-              feedbackInvalid="Please enter Description." />
+              feedbackInvalid="Please enter Description." /> -->
           </CCol>
         </CRow>
-      
+
         <CRow>
           <CCol class="mt-4 d-flex justify-content-end">
-            <CButton color="secondary" class="me-2" variant="outline" @click="$router.push({ path: `/properties` })">Cancel
+            <CButton color="secondary" class="me-2" variant="outline" @click="$router.push({ path: `/properties` })">
+              Cancel
             </CButton>
             <CButton type="submit" color="primary">{{ action === 'create' ? "Create" : "Update"}}</CButton>
           </CCol>
@@ -51,7 +56,8 @@
 
 <script>
 import { cilList, cilZoomIn } from '@coreui/icons';
-import api from "@/api/api-client";
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 export default {
   name: 'User Form',
@@ -59,7 +65,7 @@ export default {
   data() {
     return {
       action: '',
-      propertyId:0,
+      propertyId: 0,
       validatedCustom: null,
       icons: {
         cilList,

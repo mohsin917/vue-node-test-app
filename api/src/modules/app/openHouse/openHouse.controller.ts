@@ -49,6 +49,45 @@ export class OpenHouseController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('find-next/:currentId')
+  async findNext(@Res() res: Response, @Req() req: Request) {
+    try {
+
+      return res.json(await this._openHouseService.findNext(Number(req.params.currentId)))
+
+    } catch (error) {
+      console.log(error);
+      return { status: 'error', message: 'Something went wrong' }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('find-prev/:currentId')
+  async findPrev(@Res() res: Response, @Req() req: Request) {
+    try {
+
+      return res.json(await this._openHouseService.findPrev(Number(req.params.currentId)))
+
+    } catch (error) {
+      console.log(error);
+      return { status: 'error', message: 'Something went wrong' }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-details/:id')
+  async getDetails(@Res() res: Response, @Req() req: Request) {
+    try {
+
+      return res.json(await this._openHouseService.getDetails(Number(req.params.id)))
+
+    } catch (error) {
+      console.log(error);
+      return { status: 'error', message: 'Something went wrong' }
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Put('update/:id')
   async update(@Res() res: Response, @Body() payload: UpdateOpenHouseDto, @Param() param) {
     try {

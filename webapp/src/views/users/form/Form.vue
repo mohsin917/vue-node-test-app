@@ -39,7 +39,8 @@
 
 <script>
 import { cilList, cilZoomIn } from '@coreui/icons';
-import api from "@/api/api-client";
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 export default {
   name: 'User Form',

@@ -17,13 +17,8 @@ export class OpenHouseDetailService extends BaseService {
    * @returns response
    */
   async createDetailHouse(payload: OpenHouseDetailDto) {
-    // const houseExists = await this.findHouseByPropertyId(Number(payload.propertyId));
-    // if (houseExists) {
-    //   return { status: "error", message: "House already exists with this Property" };
-    // }
+    
     const record = {
-      propertyId : Number(payload.propertyId),
-      tenantAmount : Number(payload.tenantAmount),
       openHouseId :  Number(payload.houseId),
       userId: Number(payload.userId)
     }

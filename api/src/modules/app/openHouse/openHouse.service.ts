@@ -71,21 +71,64 @@ export class OpenHouseService extends BaseService {
    * @returns 
    */
   async findHouseById(id: number) {
-    const houseInDB = await this.findOneById(id, [
+    const openHouse = await this.findOneById(id, [
       { model: Property },
       { model: OpenHouseDetail }
     ]);
 
-    houseInDB.dataValues.openHouseTotalAmount = 0;
-    for (let houseDetailIndex = 0; houseDetailIndex < houseInDB.dataValues.openHouseDetails.length; houseDetailIndex++) {
-      const openHouseDetail = houseInDB.openHouseDetails[houseDetailIndex];
-      houseInDB.dataValues.openHouseTotalAmount += openHouseDetail.tenantAmount
-    }
-    delete houseInDB.dataValues.openHouseDetails
-
-    return houseInDB ?
-      { status: "success", message: "Open House detail", data: houseInDB } :
+    return openHouse ?
+      { status: "success", message: "Open House detail", data: openHouse } :
       { status: "error", message: "Unable to get Open House data" };;
+  }
+
+  /**
+   * Find next record
+   * @param currentId number
+   * @returns 
+   */
+  async findNext(currentId: number) {
+
+    const openHouse = await this.model.sequelize.query(`SELECT id FROM tbl_open_houses WHERE id > ${currentId} ORDER BY id ASC LIMIT 1`);
+
+    if (openHouse[0].length == 1) {
+      return { status: "success", message: "Open House detail", data: openHouse[0][0] };
+    }
+
+    return { status: "error", message: "Unable to get Open House data" };
+
+  }
+
+
+  /**
+   * Find prev record
+   * @param currentId number
+   * @returns 
+   */
+  async findPrev(currentId: number) {
+
+    const openHouse = await this.model.sequelize.query(`SELECT id FROM tbl_open_houses WHERE id < ${currentId} ORDER BY id ASC LIMIT 1`);
+
+    if (openHouse[0].length == 1) {
+      return { status: "success", message: "Open House detail", data: openHouse[0][0] };
+    }
+
+    return { status: "error", message: "Unable to get Open House data" };
+
+  }
+
+
+  /**
+   * Find prev record
+   * @param currentId number
+   * @returns 
+   */
+  async getDetails(id: number) {
+
+    const records = await this.model.sequelize.query(`SELECT d.id, usr.name FROM tbl_open_house_details as d
+    INNER JOIN tbl_users AS usr ON usr.id = d.user_id where d.open_house_id = ${id}`);
+
+    return { status: "success", message: "Open House detail", data: records[0] };
+
   }
 
   /**
@@ -121,7 +164,7 @@ export class OpenHouseService extends BaseService {
   }
 
   async deleteHouseById(id: number) {
-    const openHouses = await this._openHouseDetailService.findAll({openHouseId: id});
+    const openHouses = await this._openHouseDetailService.findAll({ openHouseId: id });
     for (let houseIndex = 0; houseIndex < openHouses.length; houseIndex++) {
       const element = openHouses[houseIndex].dataValues;
       await this._openHouseDetailService.deleteHouseDetailById(element.id);

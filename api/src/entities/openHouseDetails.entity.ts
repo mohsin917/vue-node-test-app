@@ -16,15 +16,6 @@ export class OpenHouseDetail extends Model<OpenHouseDetail>{
   @BelongsTo(() => OpenHouse)
   openHouse: OpenHouse
 
-  @ForeignKey(() => Property)
-  @Column({
-    type: DataType.BIGINT,
-    field: 'property_id'
-  })
-  propertyId: number;
-  @BelongsTo(() => Property)
-  property: Property
-
   @ForeignKey(() => User)
   @Column({
     type: DataType.BIGINT,
@@ -34,12 +25,6 @@ export class OpenHouseDetail extends Model<OpenHouseDetail>{
   @BelongsTo(() => User)
   users: User
 
-  @Column({
-    type: DataType.INTEGER,
-    field: 'tenant_amount'
-  })
-  tenantAmount: number;
-  
   @Column({
     type: DataType.INTEGER,
     field: 'created_by'

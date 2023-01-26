@@ -17,7 +17,7 @@
     </CCardHeader>
     <!-- Body -->
     <CCardBody>
-      <CTable hover >
+      <CTable hover>
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell scope="col">Name</CTableHeaderCell>
@@ -89,7 +89,8 @@
 
 <script>
 import { cilPlus, cilPen, cilXCircle, cilZoomIn } from '@coreui/icons'
-import api from '@/api/api-client'
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 export default {
   name: 'Users',

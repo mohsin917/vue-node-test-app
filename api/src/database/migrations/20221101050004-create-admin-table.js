@@ -39,6 +39,11 @@ module.exports = {
       }
     });
 
+    await queryInterface.bulkInsert('tbl_admins', [{
+      email: 'admin@site.com',
+      password: '$2b$12$ONKoxjHM1U1Cjgp/v33A0.AD6XvPapgShF0YijpttuPuH78zastxm',
+      name: 'John Smith',
+    }]);
 
   },
 

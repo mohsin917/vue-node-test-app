@@ -18,40 +18,31 @@
     <!-- Body -->
     <CCardBody>
       <CForm class="row g-3 needs-validation" novalidate :validated="validatedCustom" @submit="handleSaveButton">
+
+        <CRow class="mt-4">
+          <CCol>
+            <label class="mb-2" for="propertyId">PropertyList</label>
+            <CFormSelect v-model="form.propertyId" class="mb-3" aria-label="">
+              <option selected disabled>Select One</option>
+              <option v-for="property in propertyList" v-bind:value=property.id>{{ property.address }}</option>
+            </CFormSelect>
+          </CCol>
+        </CRow>
+
         <CRow>
           <CCol :sm="6">
             <CFormInput class="mb-1 removeBorder mt-3" type="text" id="floatingName" floatingLabel="Visitor Amount"
               autocomplete="off" placeholder="Visitor Amount" v-model="form.visitorAmount" required
               feedbackInvalid="Please enter Visitor Amount." />
           </CCol>
-          <!-- <CCol :sm="6">
-
-            <CFormFloating>
-              <CFormSelect v-model="form.propertyId" class="mb-1 removeBorder mt-3" id="floatingSelect" floatingLabel="Select Property"
-                aria-label="Floating label select example" >
-                <option >Open this Property list</option>
-                <option v-for="property in propertyList" v-bind:value=property.id>{{property.address}}</option>
-              </CFormSelect>
-            </CFormFloating>
-          </CCol> -->
-           
-          <CCol :sm="6">
-            <label class="mb-2" for="floatingPassword">PropertyList</label>
-
-            <CFormSelect v-model="form.propertyId" class="mb-3" aria-label="Large select example" >
-              <option selected disabled>Select One</option>
-              <option v-for="property in propertyList" v-bind:value=property.id>{{property.address}}</option>
-            </CFormSelect>
-          </CCol>
-        </CRow>
-        <CRow>
           <CCol :sm="6">
             <CFormInput class="mb-1 removeBorder mt-3" type="date" id="floatingName" floatingLabel="Start Date"
               autocomplete="off" placeholder="Visitor Start Date" v-model="form.startDate" required
               feedbackInvalid="Please enter Visitor Start Date." />
           </CCol>
         </CRow>
-        <CRow class="mt-1">
+
+        <CRow class="mt-4">
           <CCol :xs="12" class=" d-flex justify-content-end">
             <CButton color="secondary" class="me-2" variant="outline" @click="$router.push({ path: `/openHouse` })">
               Cancel
@@ -66,10 +57,11 @@
 
 <script>
 import { cilList, cilZoomIn } from '@coreui/icons';
-import api from "@/api/api-client";
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 export default {
-  name: 'User Form',
+  name: 'OpenHouse Form',
   components: {},
   data() {
 
@@ -95,16 +87,17 @@ export default {
     this.action = this.$router.currentRoute.value.meta.action;
     if (this.action === 'update') {
       this.userId = this.$router.currentRoute.value.params.id;
-      this.getUser();
+      this.getRecord();
     }
   },
 
   methods: {
 
-    getUser() {
+    getRecord() {
       api.get(`/openHouse/find/${this.userId}`).then((res) => {
-        if (res) {
-          this.propertyList = res.data;
+        if (res.status == 'success') {
+          this.form = res.data;
+          this.form.startDate = new Date(res.data.startDate);
         }
       });
     },
@@ -118,14 +111,15 @@ export default {
     },
 
     handleSaveButton(event) {
-      // event.preventDefault();
+
       const form = event.currentTarget;
 
       // check validation either its false or true
       if (form.checkValidity() === true) {
-        // check either action is update or create
 
+        // check either action is update or create
         if (this.action === 'update') {
+
           // api call update property
           api.put(`openHouse/update/${this.propertyId}`, this.form).then((res) => {
             if (res.status === "success") {

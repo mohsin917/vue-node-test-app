@@ -60,12 +60,13 @@ export class BaseService {
    * @param condition any
    * @returns Model
    */
-  public findAll(condition: any, sortOrder?: any, include?: any, attributes?: any) {
+  public findAll(condition: any, sortOrder?: any, include?: any, attributes?: any, limit?: number) {
     return this.model.findAll({
       where: condition,
       order: sortOrder,
       include: include,
-      attributes: attributes
+      attributes: attributes,
+      limit: limit
     });
   }
 

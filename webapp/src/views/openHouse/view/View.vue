@@ -45,20 +45,36 @@
           </CButton>
         </CCol>
       </CRow>
-      <CRow class="mt-4">
+
+      <div class="mt-4">
         <CRow>
-          <p>Address: {{ openHouse?.property?.address }}</p>
+          <CCol :sm="3" class="lbl">Address</CCol>
+          <CCol>{{ openHouse?.property?.address }}</CCol>
         </CRow>
-        <CRow>
-          <p>Description: {{ openHouse?.property?.description }}</p>
+
+        <CRow class="mt-2">
+          <CCol :sm="3" class="lbl">Description</CCol>
+          <CCol>{{ openHouse?.property?.description }}</CCol>
         </CRow>
-        <CRow>
-          <p>Total enrolled Tenants: {{ openHouse?.openHouseTotalAmount }}</p>
+
+        <CRow class="mt-2">
+          <CCol :sm="3" class="lbl">Visitor Amount</CCol>
+          <CCol>{{ openHouse?.visitorAmount }}</CCol>
         </CRow>
-        <CRow>
-          <p>Remaining Houses: {{ openHouse?.visitorAmount - openHouse?.openHouseTotalAmount }}</p>
+
+        <CRow class="mt-2">
+          <CCol :sm="3" class="lbl">Remaining Enrolment</CCol>
+          <CCol>{{ openHouse?.visitorAmount - details.length }}</CCol>
         </CRow>
-        <CCol :xs="6" class="text-end">
+      </div>
+
+
+      <!-- Tenant -->
+      <CRow class="mt-5">
+        <CCol>
+          <h4>Tenant Enrolment</h4>
+        </CCol>
+        <CCol style="text-align:right">
           <CButton color='success' variant="outline" @click="
             () => {
               addTenantModal = true
@@ -70,6 +86,28 @@
         </CCol>
       </CRow>
 
+      <div class="m-4">
+        <CRow class="mt-2">
+          <CCol class="lbl">Name</CCol>
+          <CCol></CCol>
+        </CRow>
+        <hr />
+
+        <div v-for="item of details">
+          <CRow class="mt-2">
+            <CCol>{{ item.name }}</CCol>
+            <CCol class="text-end">
+              <CButton color="danger" variant="outline" @click="deleteUser(item.id)">
+                <CIcon :icon="icons.cilXCircle" />
+              </CButton>
+            </CCol>
+          </CRow>
+          <hr />
+        </div>
+
+      </div>
+
+      <!-- Add tenant modal -->
       <CCardBody>
         <div>
           <CModal alignment="center" :visible="addTenantModal" @close="
@@ -88,21 +126,8 @@
             <CModalBody>
 
               <CForm class="row g-3 needs-validation" novalidate :validated="validatedCustom">
-                <CRow>
-                  <CCol>
-                    <CFormInput class="mb-1 removeBorder mt-3" type="text" id="floatingName"
-                      floatingLabel="Visitor Amount" autocomplete="off" placeholder="Visitor Amount"
-                      v-model="tenantForm.tenantAmount" required feedbackInvalid="Please enter Visitor Amount." />
-                  </CCol>
-                </CRow>
-                <CRow>
-                  <CCol>
-                    <CFormInput class="mb-1 removeBorder mt-3" type="text" id="floatingName"
-                      floatingLabel="Property Address" autocomplete="off" placeholder="Property Address"
-                      v-model="tenantForm.propertyName" required feedbackInvalid="Please enter property address." />
-                  </CCol>
-                </CRow>
-                <CRow>
+
+                <CRow class="mt-4">
                   <CCol>
                     <label class="mb-2" for="floatingPassword">UsersList</label>
 
@@ -125,10 +150,11 @@
               </CButton>
               <CButton color="success" @click="handleSaveTenant(this.tenantForm)">Save</CButton>
             </CModalFooter>
-        
+
             <div v-if="limitNotification" class="alert alert-danger alert-dismissible fade show" role="alert">
               <strong>Limit Exceed!</strong> You have add more limit please reduce it.
-              <button type="button" @click="closeAlert()" class="btn-close" data-coreui-dismiss="alert" aria-label="Close"></button>
+              <button type="button" @click="closeAlert()" class="btn-close" data-coreui-dismiss="alert"
+                aria-label="Close"></button>
             </div>
           </CModal>
         </div>
@@ -174,7 +200,8 @@
 </template>
 <script>
 import { cilPen, cilXCircle, cilList, cilPlus, cilArrowLeft, cilArrowRight } from '@coreui/icons';
-import api from "@/api/api-client";
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 
 export default {
@@ -192,56 +219,62 @@ export default {
       deleteConfirmationModal: false,
       limitNotification: false,
       tenantForm: {
-        tenantAmount: '',
         houseId: '',
-        propertyId: '',
         propertyName: '',
         userId: ''
       },
-      propertyList: [],
       validatedCustom: null,
-      users: []
+      users: [],
+      details: []
     }
   },
+
+  watch: {
+    $route(to, from) {
+      this.id = this.$route.params.id;
+      this.init()
+    },
+  },
+
   created() {
-    this.getHousesList();
-    this.getProperties();
-    this.usersList();
-    this.id = this.$route.params.id
-    this.getList(this.id);
+    this.id = this.$route.params.id;
+    this.init()
   },
   methods: {
+
+    init() {
+      this.usersList();
+      this.getRecord(this.id);
+      this.getDetails(this.id);
+    },
+
     /**
      * Get all property by Id
      */
-    getList(id) {
+    getRecord(id) {
       api.get(`/openHouse/find/${id}`).then((res) => {
-        if (res) {
+        if (res.status == 'success') {
           this.openHouse = res.data;
           this.tenantForm.propertyName = this.openHouse.property.address;
           this.tenantForm.propertyId = this.openHouse.property.id;
-          console.log(this.openHouse, "its response");
-
         }
       });
     },
 
-    getHousesList() {
-      api.post(`/openHouse`).then((res) => {
-        if (res) {
-          this.openHouses = res.data;
+    /**
+     * Get Details (users)
+     */
+    getDetails(id) {
+      api.get(`/openHouse/get-details/${id}`).then((res) => {
+        if (res.status == 'success') {
+          this.details = res.data;
         }
       });
     },
 
-    getProperties() {
-      api.post(`/property/`).then((res) => {
-        if (res) {
-          this.propertyList = res.data;
-        }
-      });
-    },
-
+    /**
+     * Get User list
+     */
     usersList() {
       api.post(`/users/`).then((res) => {
         if (res) {
@@ -250,6 +283,9 @@ export default {
       });
     },
 
+    /**
+     * Handle Save tenant
+     */
     handleSaveTenant(form) {
       form.houseId = this.id,
         form.propertyId = this.tenantForm.propertyId;
@@ -261,7 +297,8 @@ export default {
         api.post('openHouseDetail/create', form).then((res) => {
           if (res.status === "success") {
             this.addTenantModal = false;
-            this.$router.push({ path: `/openHouse` });
+            this.init();
+            // this.$router.push({ path: `/openHouse` });
           }
         }).catch((err) => {
           console.log(err);
@@ -270,34 +307,27 @@ export default {
       }
     },
 
+    /**
+     * Go to next 
+     */
     goNext() {
-      const houseValue = this.openHouses.find(house => { if (house.id === this.id) { return house } });
-      const index = this.openHouses.indexOf(houseValue);
-      const propertyValue = this.openHouses.at(index + 1);
-      this.isNextValueExists = index === -1 ? false : true;
-      if (this.isNextValueExists && propertyValue) {
-        this.$router.push({ path: `/openHouse/view/${propertyValue.id}` });
-        this.id = propertyValue.id;
-        this.getList(this.id);
-      } else {
-        this.isPreviousValueExists = true;
-        this.isNextValueExists = false;
-      }
+      // console.log('bingo');
+      api.get(`/openHouse/find-next/${this.id}`).then((res) => {
+        if (res.status == 'success') {
+          this.$router.push({ path: `/openHouse/view/${res.data.id}` });
+        }
+      });
     },
 
+    /**
+     * Go to previous
+     */
     goPrevious() {
-      const property = this.openHouses.find(property => { if (property.id === this.id) { return property } });
-      const index = this.openHouses.indexOf(property);
-      const propertyValue = this.openHouses.at(index - 1);
-      this.isPreviousValueExists = index === 0 ? false : true;
-      if (this.isPreviousValueExists && propertyValue) {
-        this.$router.push({ path: `/openHouse/view/${propertyValue.id}` });
-        this.id = propertyValue.id;
-        this.getList(this.id);
-      } else {
-        this.isNextValueExists = true;
-        this.isPreviousValueExists = false;
-      }
+      api.get(`/openHouse/find-prev/${this.id}`).then((res) => {
+        if (res.status == 'success') {
+          this.$router.push({ path: `/openHouse/view/${res.data.id}` });
+        }
+      });
     },
 
     /**
@@ -316,7 +346,19 @@ export default {
 
     },
 
-    closeAlert(){
+
+    deleteUser(id) {
+      api.delete(`/openHouseDetail/delete/${id}`).then((res) => {
+        if (res.status == 'success') {
+          this.init();
+        }
+      }).catch((err) => {
+        console.log(err, "its error");
+      })
+
+    },
+
+    closeAlert() {
       this.limitNotification = false;
     }
   }
@@ -324,3 +366,8 @@ export default {
 }
 
 </script>
+<style>
+.lbl {
+  color: gray;
+}
+</style>

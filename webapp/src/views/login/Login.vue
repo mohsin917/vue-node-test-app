@@ -26,6 +26,11 @@
                       feedbackInvalid="Please enter password" required />
                   </CInputGroup>
                   <p v-if="userData.message !== ''">{{ userData.message }}</p>
+                  <CRow v-if="error">
+                    <CCol>
+                      <div style="color:red; text-align:center" class="mb-4">{{ error }}</div>
+                    </CCol>
+                  </CRow>
                   <CRow>
                     <CCol :xs="6">
                       <CButton color="primary" class="px-4" type="submit"> Login </CButton>
@@ -48,7 +53,8 @@
 
 <!--Script Start-->
 <script>
-import api from "@/api/api-client";
+import ApiClient from '@/api/api-client'
+const api = new ApiClient();
 
 
 export default {
@@ -61,9 +67,10 @@ export default {
         message: ''
       },
       form: {
-        email: 'roofus@gmail.com',
-        password: '1234567',
+        email: 'admin@site.com',
+        password: 'pass2word',
       },
+      error: null,
     }
   },
   methods: {
@@ -76,6 +83,9 @@ export default {
             this.userData = res.data;
             localStorage.setItem("token", res.data.token);
             this.$router.push({ path: '/dashboard' });
+          }
+          else {
+            this.error = res.message;
           }
         }).catch((err) => {
           console.log(err, " not got it");

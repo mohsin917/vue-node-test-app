@@ -3,12 +3,6 @@ import { IsNotEmpty, MinLength, IsEmail, IsEnum, isNumber } from 'class-validato
 export class OpenHouseDetailDto {
 
     @IsNotEmpty()
-    readonly propertyId: number;
-
-    @IsNotEmpty()
-    readonly tenantAmount: number;
-
-    @IsNotEmpty()
     readonly houseId: number;
 
     @IsNotEmpty()
@@ -16,12 +10,6 @@ export class OpenHouseDetailDto {
 }
 
 export class UpdateOpenHouseDetailDto {
-
-    @IsNotEmpty()
-    readonly propertyId: number;
-
-    @IsNotEmpty()
-    readonly tenantAmount: number;
 
     @IsNotEmpty()
     readonly houseId: number;
